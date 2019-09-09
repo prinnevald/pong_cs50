@@ -10,6 +10,7 @@ V_WIDTH = 432;
 V_HEIGHT = 243;
 P_SPEED = 200;
 
+
 function love.load()
 	love.graphics.setDefaultFilter('nearest', 'nearest');
 	love.window.setTitle("pong");
@@ -34,6 +35,7 @@ function love.load()
 	gameState = 'start';
 end
 
+
 function love.keypressed(key)
 	if key == 'escape' then
 		love.event.quit();
@@ -47,7 +49,20 @@ function love.keypressed(key)
 	end
 end
 
+
 function love.update(dt)
+
+	if ball.x < 0 then
+		p2score = p2score + 1;
+		ball:reset();
+		gameState = 'start';
+	end
+
+	if ball.x > V_WIDTH - 4 then
+		p1score = p1score + 1;
+		ball:reset();
+		gameState = 'start';
+	end
 
 	--player 1 movement
 	if love.keyboard.isDown('w') then
@@ -64,12 +79,50 @@ function love.update(dt)
 	end
 
 	if gameState == 'play' then
+
+		if ball:collides(player1) then
+			ball.dx = -ball.dx * 1.03;
+			ball.x = player1.x + 5;
+
+			if ball.dy < 0 then
+				ball.dy = -math.random(10, 150);
+			else
+				ball.dy = math.random(10, 150);
+			end
+
+		end
+
+		if ball:collides(player2) then
+			ball.dx = -ball.dx * 1.03;
+			ball.x = player2.x - 4;
+
+			if ball.dy < 0 then
+				ball.dy = -math.random(10, 150);
+			else
+				ball.dy = math.random(10, 150);
+			end
+
+		end
+
+		if ball.y <= 0 then
+			ball.y = 0;
+			ball.dy = -ball.dy;
+		end
+
+		if ball.y >= V_HEIGHT - 4 then
+			ball.y = V_HEIGHT - 4;
+			ball.dy = - ball.dy;
+		end
+
 		ball:update(dt);
+
 	end
 
 	player1:update(dt);
 	player2:update(dt);
+
 end
+
 
 function love.draw()
 
@@ -89,11 +142,13 @@ function love.draw()
 
 end
 
+
 function displayFPS()
 	love.graphics.setFont(smallFont);
 	love.graphics.setColor(0, 255, 0, 255);
 	love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 10, 10);
 end
+
 
 function displayText()
 

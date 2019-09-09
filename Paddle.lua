@@ -14,6 +14,7 @@ function Paddle:update(dt)
 	else
 		self.y = math.min(V_HEIGHT - self.height, self.y + self.dy * dt);
 	end
+	self.dy = 0;
 end
 
 function Paddle:render()
