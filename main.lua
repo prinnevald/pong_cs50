@@ -3,8 +3,8 @@ push = require 'push';
 require 'Paddle';
 require 'Ball';
 
-
 BACK_COLOR = {40/255, 45/255, 52/255, 255/255};
+
 W_WIDTH = 880;
 W_HEIGHT = 510;
 V_WIDTH = 432;
@@ -80,19 +80,7 @@ end
 
 function love.update(dt)
 
-	--player 1 movement
-	if love.keyboard.isDown('w') then
-		player1.dy = -P_SPEED;
-	elseif love.keyboard.isDown('s') then
-		player1.dy = P_SPEED;
-	end
-
-	--player 2 movement
-	if love.keyboard.isDown('up') then
-		player2.dy = -P_SPEED;
-	elseif love.keyboard.isDown('down') then
-		player2.dy = P_SPEED;
-	end
+	paddleMovement();
 
 	if gameState == 'serve' then
 		
@@ -107,6 +95,8 @@ function love.update(dt)
 	elseif gameState == 'play' then
 
 		if ball.x < 0 then
+
+			BACK_COLOR = {40/255, 45/255, 52/255, 255/255};
 
 			sounds['score']:play();
 
@@ -124,6 +114,8 @@ function love.update(dt)
 
 		if ball.x > V_WIDTH - 4 then
 
+			BACK_COLOR = {40/255, 45/255, 52/255, 255/255};
+
 			sounds['score']:play();
 
 			servingPlayer = 2;
@@ -138,51 +130,8 @@ function love.update(dt)
 			end
 		end
 
-		if ball:collides(player1) then
-
-			sounds['hit']:play();
-
-			ball.dx = -ball.dx * 1.03;
-			ball.x = player1.x + 5;
-
-			if ball.dy < 0 then
-				ball.dy = -math.random(10, 150);
-			else
-				ball.dy = math.random(10, 150);
-			end
-
-		end
-
-		if ball:collides(player2) then
-
-			sounds['hit']:play();
-
-			ball.dx = -ball.dx * 1.03;
-			ball.x = player2.x - 4;
-
-			if ball.dy < 0 then
-				ball.dy = -math.random(10, 150);
-			else
-				ball.dy = math.random(10, 150);
-			end
-
-		end
-
-		if ball.y <= 0 then
-			
-			sounds['wall_hit']:play();
-
-			ball.y = 0;
-			ball.dy = -ball.dy;
-		end
-
-		if ball.y >= V_HEIGHT - 4 then
-
-			sounds['wall_hit']:play();
-
-			ball.y = V_HEIGHT - 4;
-			ball.dy = - ball.dy;
-		end
+		paddleHitCheck();
+		wallhHitCheck();
 
 		ball:update(dt);
 
@@ -213,7 +162,10 @@ function love.draw()
 end
 
 
-function displayText()
+------------------------HELPERS----------------------------
+
+
+function displayText()	--all texts: scores, serves and etc
 
 	love.graphics.setFont(smallFont);
 
@@ -236,13 +188,92 @@ function displayText()
 end
 
 
-function displayFPS()
+function displayFPS()	--displays FPS in real time
 	love.graphics.setFont(smallFont);
 	love.graphics.setColor(0, 255, 0, 255);
 	love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 10, 10);
 end
 
 
-function love.resize(w, h)
+function paddleMovement()	--on press paddle movement
+
+	--player 1 movement
+	if love.keyboard.isDown('w') then
+		player1.dy = -P_SPEED;
+	elseif love.keyboard.isDown('s') then
+		player1.dy = P_SPEED;
+	end
+
+	--player 2 movement
+	if love.keyboard.isDown('up') then
+		player2.dy = -P_SPEED;
+	elseif love.keyboard.isDown('down') then
+		player2.dy = P_SPEED;
+	end
+
+end
+
+
+function wallhHitCheck()	--checks the walls collision
+
+	if ball.y <= 0 then
+			
+		sounds['wall_hit']:play();
+
+		ball.y = 0;
+		ball.dy = -ball.dy;
+	end
+
+	if ball.y >= V_HEIGHT - 4 then
+
+		sounds['wall_hit']:play();
+
+		ball.y = V_HEIGHT - 4;
+		ball.dy = - ball.dy;
+	end
+
+end
+
+
+function paddleHitCheck()	--collision with paddles
+
+	if ball:collides(player1) then
+
+		BACK_COLOR = {math.random(255)/255, math.random(255)/255, math.random(255)/255, 255};
+
+		sounds['hit']:play();
+
+		ball.dx = -ball.dx * 1.03;
+		ball.x = player1.x + 5;
+
+		if ball.dy < 0 then
+			ball.dy = -math.random(10, 150);
+		else
+			ball.dy = math.random(10, 150);
+		end
+
+	end
+
+	if ball:collides(player2) then
+
+		BACK_COLOR = {math.random(180)/255, math.random(180)/255, math.random(180)/255, 255};
+
+		sounds['hit']:play();
+
+		ball.dx = -ball.dx * 1.03;
+		ball.x = player2.x - 4;
+
+		if ball.dy < 0 then
+			ball.dy = -math.random(10, 150);
+		else
+			ball.dy = math.random(10, 150);
+		end
+
+	end
+
+end
+
+
+function love.resize(w, h)	--for window resizing
 	push:resize(w, h);
 end
