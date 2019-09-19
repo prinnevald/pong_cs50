@@ -9,14 +9,13 @@ W_WIDTH = 880;
 W_HEIGHT = 510;
 V_WIDTH = 432;
 V_HEIGHT = 243;
-P_SPEED = 200;
-
+P_SPEED = 300;
 
 function love.load()
 	love.graphics.setDefaultFilter('nearest', 'nearest');
 	love.window.setTitle("pong");
 	math.randomseed(os.time());
-	
+
 	smallFont = love.graphics.newFont('font.ttf', 8);	--set directory for font
 	scoreFont = love.graphics.newFont('font.ttf', 32);
 	largeFont = love.graphics.newFont('font.ttf', 16);
@@ -24,11 +23,11 @@ function love.load()
 	sounds = {
 		['hit'] = love.audio.newSource('sounds/hit.wav', 'static');
 		['wall_hit'] = love.audio.newSource('sounds/wall_hit.wav', 'static');
-		['score'] = love.audio.newSource('sounds/score.wav', 'static');	 
+		['score'] = love.audio.newSource('sounds/score.wav', 'static');
 	}
 
 	push:setupScreen(V_WIDTH, V_HEIGHT, W_WIDTH, W_HEIGHT, {
-		fullscreen = false,
+		fullscreen = true,
 		resizable = true,
 		vsync = true
 	});
@@ -50,7 +49,7 @@ function love.keypressed(key)
 	if key == 'escape' then
 		love.event.quit();
 	elseif key == 'return'or key == 'enter' then
-		
+
 		if gameState == 'start' then
 			gameState = 'serve';
 		elseif gameState == 'serve' then
@@ -62,7 +61,7 @@ function love.keypressed(key)
 
 			p1score = 0;
 			p2score = 0;
-			
+
 			if winningPlayer == 1 then
 				servingPlayer = 2;
 			else
@@ -73,7 +72,7 @@ function love.keypressed(key)
 			gameState = 'serve';
 			ball:reset();
 		end
-	
+
 	end
 end
 
@@ -83,9 +82,9 @@ function love.update(dt)
 	paddleMovement();
 
 	if gameState == 'serve' then
-		
+
 		ball.dy = math.random(-50, 50);
-		
+
 		if servingPlayer == 1 then
 			ball.dx = math.random(140, 200);
 		else
@@ -102,7 +101,7 @@ function love.update(dt)
 
 			servingPlayer = 1;
 			p2score = p2score + 1;
-			
+
 			if p2score == 5 then
 				winningPlayer = 2;
 				gameState = 'done';
@@ -120,7 +119,7 @@ function love.update(dt)
 
 			servingPlayer = 2;
 			p1score = p1score + 1;
-			
+
 			if p1score == 5 then
 				winningPlayer = 1;
 				gameState = 'done';
@@ -217,7 +216,7 @@ end
 function wallhHitCheck()	--checks the walls collision
 
 	if ball.y <= 0 then
-			
+
 		sounds['wall_hit']:play();
 
 		ball.y = 0;
@@ -243,7 +242,7 @@ function paddleHitCheck()	--collision with paddles
 
 		sounds['hit']:play();
 
-		ball.dx = -ball.dx * 1.03;
+		ball.dx = -ball.dx * 1.1;
 		ball.x = player1.x + 5;
 
 		if ball.dy < 0 then
@@ -260,7 +259,7 @@ function paddleHitCheck()	--collision with paddles
 
 		sounds['hit']:play();
 
-		ball.dx = -ball.dx * 1.03;
+		ball.dx = -ball.dx * 1.1;
 		ball.x = player2.x - 4;
 
 		if ball.dy < 0 then
